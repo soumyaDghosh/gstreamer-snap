@@ -122,6 +122,7 @@ parts:
       - libopengl-dev
       - libgles-dev
       - libgudev-1.0-dev
+      - libass-dev
     stage-packages:
       - liborc-0.4-dev ## For gst-plugins-base
       - libasound2-dev
@@ -162,6 +163,7 @@ parts:
       - libopengl0
       - libgles2
       - libgudev-1.0-0
+      - libass9
     build-environment:
       - PATH: $PATH:$CRAFT_PART_INSTALL/usr/bin
     prime:
