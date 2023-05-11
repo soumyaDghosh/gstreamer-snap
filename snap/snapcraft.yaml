@@ -199,7 +199,7 @@ parts:
       - usr/bin
       - usr/include
       - usr/lib
-      - usr/libexec/gstreamer-1.0/gst-completion-helper
+      - usr/libexec/gstreamer-1.0/gst-ptp-helper
       - usr/libexec/gstreamer-1.0/gst-plugin-scanner
       - usr/sbin
       - usr/share
