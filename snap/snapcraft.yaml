@@ -1,0 +1,248 @@
+name: gstreamer # you probably want to 'snapcraft register <name>'
+version: '0.2' # just for humans, typically '1.2+git' or '1.3.2'
+summary: gstreamer packaged as snap # 79 char long summary
+description: |
+  GStreamer is a library for constructing graphs of media-handling components. The applications it supports range from simple Ogg/Vorbis playback, audio/video streaming to complex audio (mixing) and video (non-linear editing) processing.(https://gstreamer.freedesktop.org/)
+
+
+confinement: strict # use 'strict' once you have the right plugs and slots
+grade: stable # must be 'stable' to release into candidate/stable channels
+base: core22
+parts:
+  ninja:
+    plugin: nil
+    source: https://github.com/ninja-build/ninja.git
+    source-tag: 'v1.11.1'
+    override-build: |
+      rm -rf build
+      rm -f ninja
+      rm -f ninja_bootstrap
+      sed -i 's_^#!/usr/bin/env python$_#!/usr/bin/env python3_g' configure.py
+      ./configure.py --bootstrap
+      mv ninja ninja_bootstrap
+      rm -rf build
+      ./ninja_bootstrap
+      rm -f ninja_bootstrap
+      mkdir -p $CRAFT_PART_INSTALL/usr/bin
+      mv ninja $CRAFT_PART_INSTALL/usr/bin/
+    build-packages:
+      - python3
+  meson-deps:
+    after: [ ninja ]
+    plugin: nil
+    source: https://github.com/mesonbuild/meson.git
+    source-tag: '1.1.0'
+    override-build: |
+      python3 -m pip install .
+      mkdir -p $CRAFT_PART_INSTALL/usr/lib/python3/dist-packages
+      rm -rf $CRAFT_PART_INSTALL/usr/lib/python3/dist-packages/meson*
+      python3 -m pip install --target=$CRAFT_PART_INSTALL/usr .
+      mv $CRAFT_PART_INSTALL/usr/meson* $CRAFT_PART_INSTALL/usr/lib/python3/dist-packages/
+      sed -i "s%^#!/usr/bin/python3$%#!/usr/bin/env python3%g" /usr/local/bin/meson
+      sed -i "s%^#!/usr/bin/python3$%#!/usr/bin/env python3%g" $CRAFT_PART_INSTALL/usr/bin/meson
+    build-packages:
+      - python3-pip  
+  gstreamer:
+    after: [ meson-deps ]
+    plugin: meson
+    source: https://gitlab.freedesktop.org/gstreamer/gstreamer.git
+    source-tag: '1.22.2'
+    meson-parameters:
+      - --buildtype=release
+      - --wrap-mode=nodownload
+      - -Dbase=enabled
+      - -Dgood=enabled
+      - -Dbad=enabled
+      - -Dugly=enabled
+      - -Dlibav=enabled
+      - -Dvaapi=enabled
+      - -Dsharp=disabled
+      - -Drs=disabled
+      - -Dpython=disabled
+      - -Ddevtools=disabled
+      - -Dges=disabled
+      - -Drtsp_server=disabled
+      - -Dgst-examples=disabled
+      - -Dqt5=disabled
+      - -Dtests=disabled
+      - -Dexamples=disabled
+      - -Dintrospection=enabled
+      - -Ddoc=disabled
+      - -Dgtk_doc=disabled
+      - -Dgpl=enabled
+      - -Dgstreamer:benchmarks=disabled
+      - -Dgstreamer:gobject-cast-checks=disabled
+      - -Dgstreamer:glib-asserts=disabled
+      - -Dgstreamer:glib-checks=disabled
+      - -Dgstreamer:extra-checks=disabled
+      - -Dgst-plugins-base:gobject-cast-checks=disabled
+      - -Dgst-plugins-base:glib-asserts=disabled
+      - -Dgst-plugins-base:glib-checks=disabled
+      - -Dgst-plugins-base:gl_api=opengl,gles2
+      - -Dgst-plugins-base:gl_platform=egl,glx
+      - -Dgst-plugins-good:gobject-cast-checks=disabled
+      - -Dgst-plugins-good:glib-asserts=disabled
+      - -Dgst-plugins-good:glib-checks=disabled
+      - -Dgst-plugins-good:gtk3=disabled
+      - -Dgst-plugins-bad:gobject-cast-checks=disabled
+      - -Dgst-plugins-bad:glib-asserts=disabled
+      - -Dgst-plugins-bad:glib-checks=disabled
+      - -Dgst-plugins-bad:extra-checks=disabled
+      - -Dgst-plugins-bad:vulkan=disabled
+      - -Dgst-plugins-bad:webrtc=disabled
+      - -Dgst-plugins-bad:wasapi=disabled
+      - -Dgst-plugins-bad:wasapi2=disabled
+      - -Dgst-plugins-bad:winks=disabled
+      - -Dgst-plugins-bad:winscreencap=disabled
+      - -Dgst-plugins-bad:assrender=enabled
+      - -Dgst-plugins-bad:nvcodec=enabled
+      - -Dgst-plugins-bad:v4l2codecs=enabled
+      - -Dgst-plugins-bad:va=enabled
+      - -Dgst-plugins-ugly:gobject-cast-checks=disabled
+      - -Dgst-plugins-ugly:glib-asserts=disabled
+      - -Dgst-plugins-ugly:glib-checks=disabled
+      - -Dgst-plugins-ugly:mpeg2dec=enabled
+    build-packages:
+      - bison
+      - flex
+      - gettext
+      - libgnutls28-dev
+      - liborc-0.4-dev
+      - libpulse-dev
+      - libva-dev
+      - libwayland-dev
+      - libxrandr-dev
+      - yasm
+      - libxv-dev
+      - libtag1-dev
+      - libwavpack-dev
+      - ffmpeg
+      - python3-pip
+      - libgirepository1.0-dev
+      - libopengl-dev
+      - libgles-dev
+      - libgudev-1.0-dev
+    stage-packages:
+      - liborc-0.4-dev ## For gst-plugins-base
+      - libasound2-dev
+      - libjpeg-dev
+      - libvpx-dev
+      - libvorbis-dev
+      - libogg-dev
+      - libpulse-dev
+      - libpulse0
+      - libwavpack-dev
+      - libvisual-0.4-dev
+      - libtag1v5
+      - libopus-dev
+      - libcairo-gobject2
+      - libgdk-pixbuf2.0-dev
+      - libpangocairo-1.0-0
+      - libtheora-dev
+      - libxv-dev
+      - libxdamage-dev
+      - libcdparanoia-dev
+      - libc6-dev ## For gst-plugins-ugly
+      - libusb-1.0-0-dev
+      - libwayland-egl1-mesa
+      - libcurl4
+      - libdrm2
+      - libx11-xcb1
+      - libqt5quick5
+      - libwebp7
+      - libopenexr25
+      - libopencv-calib3d4.5d
+      - libopencv-highgui4.5d
+      - libopencv-objdetect4.5d
+      - libopencv-video4.5d
+      - libqt5x11extras5
+      - libdc1394-25
+      - libx264-dev
+      - gobject-introspection
+      - libopengl0
+      - libgles2
+      - libgudev-1.0-0
+    build-environment:
+      - PATH: $PATH:$CRAFT_PART_INSTALL/usr/bin
+    prime:
+      - -usr/bin/meson
+      - -usr/bin/ninja
+      - usr/bin
+      - usr/include
+      - usr/lib
+      - usr/libexec/gstreamer-1.0/gst-completion-helper
+      - usr/libexec/gstreamer-1.0/gst-plugin-scanner
+      - usr/sbin
+      - usr/share
+    #build-attributes: [no-system-libraries]
+
+apps:
+  gst-launch:
+    environment:
+      GST_PLUGIN_PATH: $SNAP/usr/lib/gstreamer-1.0
+      GST_PLUGIN_SYSTEM_PATH: $SNAP/usr/lib/gstreamer-1.0
+      GST_PLUGIN_SCANNER: $SNAP/usr/libexec/gstreamer-1.0/gst-plugin-scanner
+    command: usr/bin/gst-launch-1.0
+
+  gst-inspect:
+    environment:
+      GST_PLUGIN_PATH: $SNAP/usr/lib/gstreamer-1.0
+      GST_PLUGIN_SYSTEM_PATH: $SNAP/usr/lib/gstreamer-1.0
+      GST_PLUGIN_SCANNER: $SNAP/usr/libexec/gstreamer-1.0/gst-plugin-scanner
+    command: usr/bin/gst-inspect-1.0
+
+  gst-typefind:
+    environment:
+      GST_PLUGIN_PATH: $SNAP/usr/lib/gstreamer-1.0
+      GST_PLUGIN_SYSTEM_PATH: $SNAP/usr/lib/gstreamer-1.0
+      GST_PLUGIN_SCANNER: $SNAP/usr/libexec/gstreamer-1.0/gst-plugin-scanner
+    command: usr/bin/gst-typefind-1.0
+
+  gst-discoverer:
+    environment:
+      GST_PLUGIN_PATH: $SNAP/usr/lib/gstreamer-1.0
+      GST_PLUGIN_SYSTEM_PATH: $SNAP/usr/lib/gstreamer-1.0
+      GST_PLUGIN_SCANNER: $SNAP/usr/libexec/gstreamer-1.0/gst-plugin-scanner
+    command: usr/bin/gst-discoverer-1.0
+
+  gst-play:
+    environment:
+      GST_PLUGIN_PATH: $SNAP/usr/lib/gstreamer-1.0
+      GST_PLUGIN_SYSTEM_PATH: $SNAP/usr/lib/gstreamer-1.0
+      GST_PLUGIN_SCANNER: $SNAP/usr/libexec/gstreamer-1.0/gst-plugin-scanner
+    command: usr/bin/gst-play-1.0
+
+  echopath:
+    environment:
+      GST_PLUGIN_PATH: $SNAP/usr/lib/gstreamer-1.0
+      GST_PLUGIN_SYSTEM_PATH: $SNAP/usr/lib/gstreamer-1.0
+      GST_PLUGIN_SCANNER: $SNAP/usr/libexec/gstreamer-1.0/gst-plugin-scanner
+    command: echo $GST_PLUGIN_PATH
+
+  uvch264src:
+    environment:
+      GST_PLUGIN_PATH: $SNAP/usr/lib/gstreamer-1.0
+      GST_PLUGIN_SYSTEM_PATH: $SNAP/usr/lib/gstreamer-1.0
+      GST_PLUGIN_SCANNER: $SNAP/usr/libexec/gstreamer-1.0/gst-plugin-scanner
+    command: usr/bin/gst-launch-1.0 uvch264src 
+
+  v4l2src:
+    environment:
+      GST_PLUGIN_PATH: $SNAP/usr/lib/gstreamer-1.0
+      GST_PLUGIN_SYSTEM_PATH: $SNAP/usr/lib/gstreamer-1.0
+      GST_PLUGIN_SCANNER: $SNAP/usr/libexec/gstreamer-1.0/gst-plugin-scanner
+    command: usr/bin/gst-launch-1.0 v4l2src 
+
+  videotestsrc:
+    environment:
+      GST_PLUGIN_PATH: $SNAP/usr/lib/gstreamer-1.0
+      GST_PLUGIN_SYSTEM_PATH: $SNAP/usr/lib/gstreamer-1.0
+      GST_PLUGIN_SCANNER: $SNAP/usr/libexec/gstreamer-1.0/gst-plugin-scanner
+    command: usr/bin/gst-launch-1.0 videotestsrc
+
+  videotestsrc-ball:
+    environment:
+      GST_PLUGIN_PATH: $SNAP/usr/lib/gstreamer-1.0
+      GST_PLUGIN_SYSTEM_PATH: $SNAP/usr/lib/gstreamer-1.0
+      GST_PLUGIN_SCANNER: $SNAP/usr/libexec/gstreamer-1.0/gst-plugin-scanner
+    command: usr/bin/gst-launch-1.0 videotestsrc pattern=ball ! video/x-raw,width=640,height=480 ! videoconvert ! x264enc ! rtph264pay ! udpsink host=127.0.0.1 port=5600 -v
