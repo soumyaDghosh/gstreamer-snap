@@ -129,6 +129,7 @@ parts:
       - libavdevice-dev
       - libavfilter-dev
       - libavformat-dev
+      - libffi-dev
     stage-packages:
       - liborc-0.4-dev ## For gst-plugins-base
       - libasound2-dev
