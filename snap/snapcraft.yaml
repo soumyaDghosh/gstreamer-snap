@@ -241,12 +241,12 @@ apps:
       GST_PLUGIN_SCANNER: $SNAP/usr/libexec/gstreamer-1.0/gst-plugin-scanner
     command: usr/bin/gst-play-1.0
 
-  echopath:
-    environment:
-      GST_PLUGIN_PATH: $SNAP/usr/lib/gstreamer-1.0
-      GST_PLUGIN_SYSTEM_PATH: $SNAP/usr/lib/gstreamer-1.0
-      GST_PLUGIN_SCANNER: $SNAP/usr/libexec/gstreamer-1.0/gst-plugin-scanner
-    command: echo $GST_PLUGIN_PATH
+  #echopath:
+  #  environment:
+  #    GST_PLUGIN_PATH: $SNAP/usr/lib/gstreamer-1.0
+  #    GST_PLUGIN_SYSTEM_PATH: $SNAP/usr/lib/gstreamer-1.0
+  #    GST_PLUGIN_SCANNER: $SNAP/usr/libexec/gstreamer-1.0/gst-plugin-scanner
+  #  command: echo $GST_PLUGIN_PATH
 
   uvch264src:
     environment:
