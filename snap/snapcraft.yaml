@@ -114,7 +114,7 @@ parts:
       - libxrandr-dev
       - yasm
       - libxv-dev
-      - libtag1-dev
+      - libtag1-devibavformat58
       - libwavpack-dev
       - ffmpeg
       - python3-pip
@@ -148,7 +148,8 @@ parts:
       - libtheora-dev
       - libxv-dev
       - libxdamage-dev
-      - libcdparanoia-devliba52-0.7.4-dev
+      - libcdparanoia-dev
+      - liba52-0.7.4-dev
       - libc6-dev ## For gst-plugins-ugly
       - libusb-1.0-0-dev
       - libwayland-egl1-mesa
