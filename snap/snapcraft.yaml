@@ -180,6 +180,7 @@ parts:
       - libavformat58
     build-environment:
       - PATH: $PATH:$CRAFT_PART_INSTALL/usr/bin
+      - LDFLAGS: "-lffi"
     prime:
       - -usr/bin/meson
       - -usr/bin/ninja
