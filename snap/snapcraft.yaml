@@ -132,6 +132,7 @@ parts:
       - libffi-dev
       - libpcre3-dev
       - zlib1g-dev
+      - libmount-dev
     stage-packages:
       - liborc-0.4-dev ## For gst-plugins-base
       - libasound2-dev
@@ -182,7 +183,7 @@ parts:
       - libavformat58
     build-environment:
       - PATH: $PATH:$CRAFT_PART_INSTALL/usr/bin
-      - LDFLAGS: -lffi -lpcre -lz
+      - LDFLAGS: -lffi -lpcre -lz -lmount
     prime:
       - -usr/bin/meson
       - -usr/bin/ninja
