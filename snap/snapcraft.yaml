@@ -137,6 +137,7 @@ parts:
       - libjpeg-dev
       - libpng-dev
       - libvpx-dev
+      - libx264-dev
     stage-packages:
       - liborc-0.4-dev ## For gst-plugins-base
       - libasound2-dev
@@ -173,7 +174,7 @@ parts:
       - libopencv-video4.5d
       - libqt5x11extras5
       - libdc1394-25
-      - libx264-dev
+      - libx264-163
       - gobject-introspection
       - libopengl0
       - libgles2
