@@ -136,6 +136,7 @@ parts:
       - libselinux1-dev
       - libjpeg-dev
       - libpng-dev
+      - libvpx-dev
     stage-packages:
       - liborc-0.4-dev ## For gst-plugins-base
       - libasound2-dev
@@ -186,6 +187,7 @@ parts:
       - libavformat58
       - libpng16-16
       - libjpeg62
+      - libvpx7
     build-environment:
       - PATH: $PATH:$CRAFT_PART_INSTALL/usr/bin
       - LDFLAGS: -lffi -lpcre -lz -lmount -lselinux
