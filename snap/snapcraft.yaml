@@ -48,6 +48,7 @@ parts:
     source: https://gitlab.freedesktop.org/gstreamer/gstreamer.git
     source-tag: '1.22.2'
     meson-parameters:
+      - --prefix=/usr
       - --buildtype=release
       - --wrap-mode=nodownload
       - -Dbase=enabled
