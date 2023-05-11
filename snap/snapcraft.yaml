@@ -128,7 +128,7 @@ parts:
       - libavcodec-dev
       - libavdevice-dev
       - libavfilter-dev
-      - ibavformat-dev
+      - libavformat-dev
     stage-packages:
       - liborc-0.4-dev ## For gst-plugins-base
       - libasound2-dev
