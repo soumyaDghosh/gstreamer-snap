@@ -7,7 +7,9 @@ description: |
 
 confinement: strict # use 'strict' once you have the right plugs and slots
 grade: stable # must be 'stable' to release into candidate/stable channels
-base: core22
+base: core
+build-base: core22
+
 parts:
   ninja:
     plugin: nil
@@ -27,6 +29,8 @@ parts:
       mv ninja $CRAFT_PART_INSTALL/usr/bin/
     build-packages:
       - python3
+    override-prime: ''
+      
   meson-deps:
     after: [ ninja ]
     plugin: nil
@@ -42,11 +46,18 @@ parts:
       sed -i "s%^#!/usr/bin/python3$%#!/usr/bin/env python3%g" $CRAFT_PART_INSTALL/usr/bin/meson
     build-packages:
       - python3-pip  
+    override-prime: ''
+    
   gstreamer:
     after: [ meson-deps ]
     plugin: meson
     source: https://gitlab.freedesktop.org/gstreamer/gstreamer.git
     source-tag: '1.22.8'
+    build-environment:
+      - PATH: ${CRAFT_STAGE}/usr/bin:${PATH}
+      - PKG_CONFIG_PATH: /snap/ffmpeg-2204-sdk/current/usr/lib/${CRAFT_ARCH_TRIPLET_BUILD_FOR}:${PKG_CONFIG_PATH}
+    build-snaps:
+      - ffmpeg-2204-sdk
     meson-parameters:
       - --prefix=/usr
       - --buildtype=release
@@ -103,10 +114,6 @@ parts:
       - -Dgst-plugins-ugly:glib-asserts=disabled
       - -Dgst-plugins-ugly:glib-checks=disabled
       - -Dgst-plugins-ugly:mpeg2dec=enabled
-    override-build: |
-      echo $PKG_CONFIG_PATH
-      echo $LD_LIBRARY_PATH
-      craftctl default
     build-packages:
       - bison
       - flex
@@ -121,7 +128,6 @@ parts:
       - libxv-dev
       - libtag1-dev
       - libwavpack-dev
-      - ffmpeg
       - python3-pip
       - libgirepository1.0-dev
       - libopengl-dev
@@ -130,10 +136,6 @@ parts:
       - libass-dev
       - libmpeg2-4-dev
       - liba52-0.7.4-dev
-      - libavcodec-dev
-      - libavdevice-dev
-      - libavfilter-dev
-      - libavformat-dev
       - libffi-dev
       - libpcre3-dev
       - zlib1g-dev
@@ -142,7 +144,6 @@ parts:
       - libjpeg-dev
       - libpng-dev
       - libvpx-dev
-      - libx264-dev
     stage-packages:
       - liborc-0.4-dev ## For gst-plugins-base
       - libasound2-dev
@@ -208,74 +209,3 @@ parts:
       - usr/sbin
       - usr/share
     #build-attributes: [no-system-libraries]
-
-apps:
-  gst-launch:
-    environment:
-      GST_PLUGIN_PATH: $SNAP/usr/lib/gstreamer-1.0
-      GST_PLUGIN_SYSTEM_PATH: $SNAP/usr/lib/gstreamer-1.0
-      GST_PLUGIN_SCANNER: $SNAP/usr/libexec/gstreamer-1.0/gst-plugin-scanner
-    command: usr/bin/gst-launch-1.0
-
-  gst-inspect:
-    environment:
-      GST_PLUGIN_PATH: $SNAP/usr/lib/gstreamer-1.0
-      GST_PLUGIN_SYSTEM_PATH: $SNAP/usr/lib/gstreamer-1.0
-      GST_PLUGIN_SCANNER: $SNAP/usr/libexec/gstreamer-1.0/gst-plugin-scanner
-    command: usr/bin/gst-inspect-1.0
-
-  gst-typefind:
-    environment:
-      GST_PLUGIN_PATH: $SNAP/usr/lib/gstreamer-1.0
-      GST_PLUGIN_SYSTEM_PATH: $SNAP/usr/lib/gstreamer-1.0
-      GST_PLUGIN_SCANNER: $SNAP/usr/libexec/gstreamer-1.0/gst-plugin-scanner
-    command: usr/bin/gst-typefind-1.0
-
-  gst-discoverer:
-    environment:
-      GST_PLUGIN_PATH: $SNAP/usr/lib/gstreamer-1.0
-      GST_PLUGIN_SYSTEM_PATH: $SNAP/usr/lib/gstreamer-1.0
-      GST_PLUGIN_SCANNER: $SNAP/usr/libexec/gstreamer-1.0/gst-plugin-scanner
-    command: usr/bin/gst-discoverer-1.0
-
-  gst-play:
-    environment:
-      GST_PLUGIN_PATH: $SNAP/usr/lib/gstreamer-1.0
-      GST_PLUGIN_SYSTEM_PATH: $SNAP/usr/lib/gstreamer-1.0
-      GST_PLUGIN_SCANNER: $SNAP/usr/libexec/gstreamer-1.0/gst-plugin-scanner
-    command: usr/bin/gst-play-1.0
-
-  #echopath:
-  #  environment:
-  #    GST_PLUGIN_PATH: $SNAP/usr/lib/gstreamer-1.0
-  #    GST_PLUGIN_SYSTEM_PATH: $SNAP/usr/lib/gstreamer-1.0
-  #    GST_PLUGIN_SCANNER: $SNAP/usr/libexec/gstreamer-1.0/gst-plugin-scanner
-  #  command: echo $GST_PLUGIN_PATH
-
-  uvch264src:
-    environment:
-      GST_PLUGIN_PATH: $SNAP/usr/lib/gstreamer-1.0
-      GST_PLUGIN_SYSTEM_PATH: $SNAP/usr/lib/gstreamer-1.0
-      GST_PLUGIN_SCANNER: $SNAP/usr/libexec/gstreamer-1.0/gst-plugin-scanner
-    command: usr/bin/gst-launch-1.0 uvch264src 
-
-  v4l2src:
-    environment:
-      GST_PLUGIN_PATH: $SNAP/usr/lib/gstreamer-1.0
-      GST_PLUGIN_SYSTEM_PATH: $SNAP/usr/lib/gstreamer-1.0
-      GST_PLUGIN_SCANNER: $SNAP/usr/libexec/gstreamer-1.0/gst-plugin-scanner
-    command: usr/bin/gst-launch-1.0 v4l2src 
-
-  videotestsrc:
-    environment:
-      GST_PLUGIN_PATH: $SNAP/usr/lib/gstreamer-1.0
-      GST_PLUGIN_SYSTEM_PATH: $SNAP/usr/lib/gstreamer-1.0
-      GST_PLUGIN_SCANNER: $SNAP/usr/libexec/gstreamer-1.0/gst-plugin-scanner
-    command: usr/bin/gst-launch-1.0 videotestsrc
-
-  #videotestsrc-ball:
-  #  environment:
-  #    GST_PLUGIN_PATH: $SNAP/usr/lib/gstreamer-1.0
-  #    GST_PLUGIN_SYSTEM_PATH: $SNAP/usr/lib/gstreamer-1.0
-  #    GST_PLUGIN_SCANNER: $SNAP/usr/libexec/gstreamer-1.0/gst-plugin-scanner
-  #  command: usr/bin/gst-launch-1.0 videotestsrc pattern=ball ! video/x-raw,width=640,height=480 ! videoconvert ! x264enc ! rtph264pay ! udpsink host=127.0.0.1 port=5600 -v
