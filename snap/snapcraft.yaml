@@ -103,6 +103,10 @@ parts:
       - -Dgst-plugins-ugly:glib-asserts=disabled
       - -Dgst-plugins-ugly:glib-checks=disabled
       - -Dgst-plugins-ugly:mpeg2dec=enabled
+    override-build: |
+      echo $PKG_CONFIG_PATH
+      echo $LD_LIBRARY_PATH
+      craftctl default
     build-packages:
       - bison
       - flex
