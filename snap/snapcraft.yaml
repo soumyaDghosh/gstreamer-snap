@@ -46,7 +46,7 @@ parts:
     after: [ meson-deps ]
     plugin: meson
     source: https://gitlab.freedesktop.org/gstreamer/gstreamer.git
-    source-tag: '1.22.2'
+    source-tag: '1.22.8'
     meson-parameters:
       - --prefix=/usr
       - --buildtype=release
