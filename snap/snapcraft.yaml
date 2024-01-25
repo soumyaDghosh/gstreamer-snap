@@ -55,7 +55,7 @@ parts:
     source-tag: '1.22.8'
     build-environment:
       - PATH: ${CRAFT_STAGE}/usr/bin:${PATH}
-      - PKG_CONFIG_PATH: /snap/ffmpeg-2204-sdk/current/usr/lib/${CRAFT_ARCH_TRIPLET_BUILD_FOR}:${PKG_CONFIG_PATH}
+      - PKG_CONFIG_PATH: /snap/ffmpeg-2204-sdk/current/usr/lib/${CRAFT_ARCH_TRIPLET_BUILD_FOR}/pkgconfig:${PKG_CONFIG_PATH}
     build-snaps:
       - ffmpeg-2204-sdk
     meson-parameters:
