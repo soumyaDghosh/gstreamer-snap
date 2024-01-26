@@ -64,7 +64,7 @@ parts:
       - --prefix=/usr
       - --buildtype=release
       - -Dexamples=disabled
-      - - Dbenchmarks=disabled
+      - -Dbenchmarks=disabled
       - -Dintrospection=enabled
       - -Dlibunwind=enabled
       - -Dlibdw=enabled
